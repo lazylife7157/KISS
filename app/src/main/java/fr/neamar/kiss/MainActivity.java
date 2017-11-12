@@ -158,7 +158,7 @@ public class MainActivity extends Activity implements QueryInterface, KeyboardSc
     /**
      * View to display when list is empty
      */
-    private View listEmpty;
+//    private View listEmpty;
     /**
      * Utility for automatically hiding the keyboard when scrolling down
      */
@@ -267,10 +267,10 @@ public class MainActivity extends Activity implements QueryInterface, KeyboardSc
 
         this.list = (ListView) this.findViewById(android.R.id.list);
         this.listContainer = (View) this.list.getParent();
-        this.listEmpty = this.findViewById(android.R.id.empty);
+//        this.listEmpty = this.findViewById(android.R.id.empty);
 
         // add history popup touch listener to empty view (prevents on not working there)
-        this.listEmpty.setOnTouchListener(this);
+//        this.listEmpty.setOnTouchListener(this);
 
         // Create adapter for records
         this.adapter = new RecordAdapter(this, this, R.layout.item_app, new ArrayList<Result>());
@@ -290,11 +290,11 @@ public class MainActivity extends Activity implements QueryInterface, KeyboardSc
                     listContainer.setVisibility(View.GONE);
                     if(!widgetUsed){
                         // when a widget is displayed this would prevent touches on the widget
-                        listEmpty.setVisibility(View.VISIBLE);
+//                        listEmpty.setVisibility(View.VISIBLE);
                     }
                 } else {
                     listContainer.setVisibility(View.VISIBLE);
-                    listEmpty.setVisibility(View.GONE);
+//                    listEmpty.setVisibility(View.GONE);
                 }
             }
         });
@@ -754,9 +754,18 @@ public class MainActivity extends Activity implements QueryInterface, KeyboardSc
             if (prefs.getBoolean("history-hide", false) && prefs.getBoolean("favorites-hide", false)) {
                 displayQuickFavoritesBar(false, true);
             }
-        }
-        if(view.getId() == searchEditText.getId()) {
-            showKeyboard();
+            final int viewId = view.getId();
+            if (viewId == searchEditText.getId()) {
+                if (isKissBarShowing) {
+                    isKissBarShowing = false;
+                    hideKeyboard();
+                    displayKissBar(isKissBarShowing);
+                } else {
+                    showKeyboard();
+                }
+            } else if (viewId != list.getId()) {
+                hideKeyboard();
+            }
         }
         return true;
     }
@@ -769,13 +778,15 @@ public class MainActivity extends Activity implements QueryInterface, KeyboardSc
         searchEditText.setText("");
     }
 
+    private boolean isKissBarShowing;
     /**
      * Display KISS menu
      */
     public void onLauncherButtonClicked(View launcherButton) {
         // Display or hide the kiss bar, according to current view tag (showMenu / hideMenu).
-
-        displayKissBar(launcherButton.getTag().equals("showMenu"));
+        isKissBarShowing = launcherButton.getTag().equals("showMenu");
+        hideKeyboard();
+        displayKissBar(isKissBarShowing);
     }
 
     public void onFavoriteButtonClicked(View favorite) {
@@ -984,14 +995,14 @@ public class MainActivity extends Activity implements QueryInterface, KeyboardSc
                 searchEditText.setHint("");
                 searcher = new NullSearcher(this);
                 //Hide default scrollview
-                findViewById(R.id.main_empty).setVisibility(View.INVISIBLE);
+//                findViewById(R.id.main_empty).setVisibility(View.INVISIBLE);
 
             } else {
                 list.setVerticalScrollBarEnabled(true);
                 searchEditText.setHint(R.string.ui_search_hint);
                 searcher = new HistorySearcher(this);
                 //Show default scrollview
-                findViewById(R.id.main_empty).setVisibility(View.VISIBLE);
+//                findViewById(R.id.main_empty).setVisibility(View.VISIBLE);
             }
         } else {
             searcher = new QuerySearcher(this, query);
@@ -1026,7 +1037,6 @@ public class MainActivity extends Activity implements QueryInterface, KeyboardSc
 
     @Override
     public void hideKeyboard() {
-
         // Check if no view has focus:
         View view = this.getCurrentFocus();
         if (view != null) {
@@ -1092,7 +1102,7 @@ public class MainActivity extends Activity implements QueryInterface, KeyboardSc
         // only add widgets if in minimal mode (may need launcher restart when turned on)
         if(prefs.getBoolean("history-hide", true)){
             // remove empty list view when using widgets, this would block touches on the widget
-            listEmpty.setVisibility(View.GONE);
+//            listEmpty.setVisibility(View.GONE);
             //add widget to view
             AppWidgetProviderInfo appWidgetInfo = mAppWidgetManager.getAppWidgetInfo(appWidgetId);
             AppWidgetHostView hostView = mAppWidgetHost.createView(this, appWidgetId, appWidgetInfo);

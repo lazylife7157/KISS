@@ -63,7 +63,7 @@
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppThemeLight"
+        android:theme="@style/AppThemeDark"
         tools:ignore="GoogleAppIndexingWarning">
         
         <!-- Can be removed once we target SDK 24+ -->
